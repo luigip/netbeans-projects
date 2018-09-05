@@ -1,0 +1,2 @@
+projecteuler.P012_divisorsV2
+projecteuler.P012_divisors

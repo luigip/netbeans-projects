@@ -1,0 +1,140 @@
+package blur;
+
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+public class BlurPanel extends JPanel {
+
+    private BufferedImage spoti, backi;
+    private Graphics2D spotg, backg;
+    private int blurLevel;
+    private ConvolveOp blurX, blurY;
+//    private static final Color TRANSPARENT = new Color(0f, 0f, 0f, 0f);
+
+    public BlurPanel(BlurFrame frame) {
+        setSize(frame.getPanelMain().getSize());
+        spoti = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+        spotg = spoti.createGraphics();
+        paintBackground();
+        blurLevel = frame.getSlider().getValue();
+//        updateConvolveOps();
+        frame.getSlider().addChangeListener(new BlurLevelListener(frame.getSlider()));
+    }
+    
+    private void updateConvolveOps() {
+        blurX = new ConvolveOp(getGaussianKernel(blurLevel, 0), ConvolveOp.EDGE_NO_OP, null);
+        blurY = new ConvolveOp(getGaussianKernel(blurLevel, 1), ConvolveOp.EDGE_NO_OP, null);        
+    }
+    /**
+     * @param allignment : 1 = vertical, otherwise horizontal
+     */
+    private static Kernel getGaussianKernel(int n, int allignment) {
+        float[] vals = new float[n];
+        double total = 0;
+        double sig = n / 5d;
+        double k = 1 / Math.sqrt(2 * Math.PI) / sig;
+        double e = Math.exp(-1 / 2d / Math.pow(sig, 2));
+        double orig = (n - 1) / 2;
+        for (int i = 0; i < n; i++) {
+            double val = k * Math.pow(e, Math.pow(i - orig, 2));
+            total += val;
+            vals[i] = (float) val;
+        }
+        // Normalize to make sum = 1
+        for (int i = 0; i < vals.length; i++) {
+            vals[i] /= total;
+        }
+        if(allignment == 1) return new Kernel(1, n, vals);
+        else return new Kernel(n, 1, vals);
+    }
+
+    public void setBlurLevel(int level) {
+        this.blurLevel = level;
+        repaint();
+    }
+
+    public void paintSpot() {
+        double x = spoti.getWidth(), y = spoti.getHeight();
+        final int R = 30;
+        spotg.setComposite(AlphaComposite.Clear);
+        spotg.fill(new Rectangle2D.Double(0, 0, x, y));
+        spotg.setComposite(AlphaComposite.SrcOver);
+
+        spotg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        spotg.setPaint(new Color(1.0f, 1.0f, 0.8f, 1f));
+        spotg.fill(new Ellipse2D.Double(x / 2 - R, y / 2 - R, R * 2, R * 2));
+
+        BufferedImage newi1 = new BufferedImage(spoti.getWidth(), spoti.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+        BufferedImage newi2 = new BufferedImage(spoti.getWidth(), spoti.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+        updateConvolveOps();
+        blurX.filter(spoti, newi1);
+//        blurX.filter(spoti, newi2);
+        blurY.filter(newi1, newi2);
+        spoti = newi2;
+        spotg = newi2.createGraphics();
+    }
+
+    public void paintBackground() {
+        backi = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        backg = backi.createGraphics();
+        final int CHECK_WIDTH = 12;
+        double x = backi.getWidth(), y = backi.getHeight();
+        float grey1 = 0.1f, grey2 = 0.3f;
+        Paint pg1 = new Color(grey1, grey1, grey1);
+        Paint pg2 = new Color(grey2, grey2, grey2);
+
+        for (int i = 0; i - 1 < x / CHECK_WIDTH; i++) {
+            for (int j = 0; j - 1 < y / CHECK_WIDTH; j++) {
+                backg.setPaint((i + j) % 2 == 0 ? pg1 : pg2);
+                backg.fill(new Rectangle2D.Double(i * CHECK_WIDTH, j * CHECK_WIDTH,
+                        (i + 1) * CHECK_WIDTH, (j + 1) * CHECK_WIDTH));
+            }
+        }
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+
+        paintSpot();
+
+        g2.drawImage(backi, 0, 0, null);
+        g2.drawImage(spoti, 0, 0, null);
+        System.out.println("paintcomp");
+    }
+
+    class BlurLevelListener implements ChangeListener {
+
+        private JSlider js;
+
+        public BlurLevelListener(JSlider js) {
+            this.js = js;
+        }
+
+        public void stateChanged(ChangeEvent e) {
+            int jsval = js.getValue();
+            if (jsval != blurLevel && jsval % 2 == 1) {
+                blurLevel = jsval;
+                repaint();
+                System.out.println("Changed to " + blurLevel);
+            }
+        }
+    }
+//    public static void main(String[] args) {
+//        getGaussianKernel(1, 1);
+//    }
+}

@@ -1,0 +1,44 @@
+package topcoder.set1;
+
+public class SymbolFrequency {
+
+    public double language(String[] frequencies, String[] text) {
+        double devsMax = -1;
+        for (int fset = 0; fset < frequencies.length; fset++) {
+
+            double[] expected = new double[26];
+            for (int i = 0; i < frequencies[fset].length(); i += 3) {
+                char letter = frequencies[fset].charAt(i);
+                
+                double freq = Double.parseDouble(frequencies[fset].substring(i + 1, i + 3)) / 100;
+                expected[letter - 'a'] = freq;
+            }
+            String allText = "";
+            for(String s: text){
+                allText += s.replace(" ", "");
+            }
+            double deviation = 0;
+            int[] count = new int[26];
+            for(char c : allText.toCharArray()){
+                count[c - 'a']++;
+            }
+            for (int i = 0; i < expected.length; i++) {
+                double expectedCount = expected[i] * allText.length();
+                deviation += Math.pow(expectedCount - count[i], 2);
+            }                
+            if(deviation < devsMax || devsMax == -1){
+                devsMax = deviation;
+            }
+        }
+        return devsMax;
+    }
+
+    public static void main(String[] args) {
+        SymbolFrequency s = new SymbolFrequency();
+        
+        String[] freq = {"a10b10c10d10e10f50"};
+        String[] text = {"abcde g"};
+        double d = s.language(freq, text);
+        System.out.println(d);
+    }
+}

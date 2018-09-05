@@ -1,0 +1,4 @@
+animatorexample.Sprite
+animatorexample.SpriteManager
+animatorexample.Animate01
+animatorexample.BackgroundImage

@@ -1,0 +1,54 @@
+1st run, no optimisations
+
+Total volume (10 steps, 10 arcs): 2,006,544.753366 
+Total volume (100 steps, 10 arcs): 1,800,410.065045 
+Total volume (10 steps, 100 arcs): 2,041,755.322047 
+Total volume (100 steps, 100 arcs): 1,837,644.435851 
+Total volume (100 steps, 1000 arcs): 1,837,964.457529 
+Total volume (1000 steps, 100 arcs): 1,858,070.890389 
+Total volume (100000 steps, 1000 arcs): 1,856,511.044080 
+Total volume (120000 steps, 1000 arcs): 1,856,545.082598 
+Total volume (100000 steps, 2000 arcs): 1,856,513.460842 
+
+2nd run, changed interators on for loops
+Total volume (10 steps, 10 arcs): 1,638,104.170043 
+Total volume (100 steps, 10 arcs): 1,800,410.065045 
+Total volume (10 steps, 100 arcs): 1,670,539.573036 
+Total volume (100 steps, 100 arcs): 1,837,644.435851 
+Total volume (100 steps, 1,000 arcs): 1,837,964.457529 
+
+3rd run, using trapezium cross-section + correct number of slices
+Total volume (10 steps, 10 arcs): 1,822,324.461704 
+Total volume (100 steps, 10 arcs): 1,818,832.094211 
+Total volume (10 steps, 100 arcs): 1,856,147.447542 
+Total volume (100 steps, 100 arcs): 1,856,205.223302 
+Total volume (100 steps, 1,000 arcs): 1,856,529.768095 
+Total volume (1,000 steps, 1,000 arcs): 1,856,529.721668 
+Total volume (10,000 steps, 1,000 arcs): 1,856,529.551289 
+Total volume (10,000 steps, 3,000 arcs): 1,856,532.476294 
+Total volume (30,000 steps, 1,000 arcs): 1,856,529.591334 
+Total volume (30,000 steps, 3,000 arcs): 1,856,532.477593 
+Total volume (10,000 steps, 10,000 arcs): 1,856,532.812440 
+
+4th run, using trapezium + iterations
+Total volume (10 steps, 10 arcs, 3 iterations): 1,855,295.557189 
+Total volume (100 steps, 10 arcs, 10 iterations): 1,856,405.683900 
+Total volume (10 steps, 10 arcs, 10 iterations): 1,856,272.436198 
+Total volume (10,000 steps, 10 arcs, 10 iterations): 1,856,409.212965 
+Total volume (10,000 steps, 100 arcs, 10 iterations): 1,856,532.806101 
+Total volume (10,000 steps, 10 arcs, 100 iterations): 1,856,409.212965 
+Total volume (10,000 steps, 100 arcs, 100 iterations): 1,856,532.806101 
+
+5th run, improved version
+Break at iter = 1
+rangeLo = -1.5707963267948966 rangeHi = -1.5707963267948966
+Total volume (10 steps, 10 arcs, 3 iterations): 1,856,495.768733 
+Total volume (100 steps, 10 arcs, 10 iterations): 1,856,532.845528 
+Break at iter = 1
+rangeLo = -1.5707963267948966 rangeHi = -1.5707963267948966
+Total volume (10 steps, 10 arcs, 10 iterations): 1,856,532.845528 
+Total volume (10,000 steps, 10 arcs, 10 iterations): 1,856,532.845528 
+Total volume (10,000 steps, 100 arcs, 10 iterations): 1,856,532.845506 
+Total volume (10,000 steps, 10 arcs, 100 iterations): 1,856,532.845528 
+
+1,856,532.8455 was correct

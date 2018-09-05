@@ -1,0 +1,2 @@
+projecteuler.P003_primes
+projecteuler.P003_AltPrime

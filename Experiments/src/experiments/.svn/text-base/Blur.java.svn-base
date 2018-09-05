@@ -1,0 +1,71 @@
+package experiments;
+
+import java.awt.*;
+import java.awt.image.*;
+import java.awt.geom.AffineTransform;
+import javax.swing.JApplet;
+import javax.swing.JFrame;
+
+public class Blur extends JApplet {
+
+    private BufferedImage bi;
+    float[] elements = {.1111f, .1111f, .1111f,
+        .1111f, .1111f, .1111f,
+        .1111f, .1111f, .1111f};
+
+    public Blur() {
+
+        setBackground(Color.white);
+
+        Image img = getToolkit().getImage("can.jpg");
+        try {
+            MediaTracker tracker = new MediaTracker(this);
+            tracker.addImage(img, 0);
+            tracker.waitForID(0);
+        } catch (Exception e) {
+        }
+
+        int iw = img.getWidth(this);
+        int ih = img.getHeight(this);
+        bi = new BufferedImage(iw, ih, BufferedImage.TYPE_INT_RGB);
+        Graphics2D big = bi.createGraphics();
+        big.drawImage(img, 0, 0, this);
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(bi.getWidth() * 2, bi.getHeight());
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        int w = getSize().width;
+        int h = getSize().height;
+        int bw = bi.getWidth(this);
+        int bh = bi.getHeight(this);
+
+        AffineTransform at = new AffineTransform();
+        at.scale(w / 2.0 / bw, h / 1.0 / bh);
+
+        BufferedImageOp biop = null;
+
+        BufferedImage bimg = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_RGB);
+
+        Kernel kernel = new Kernel(3, 3, elements);
+        ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+        cop.filter(bi, bimg);
+        biop = new AffineTransformOp(at, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        
+        g2.drawImage(bi, biop, 0, 0);
+        g2.drawImage(bimg, biop, w / 2 + 3, 0);
+
+    }
+    public static void main(String s[]) {
+        JFrame f = new JFrame("Blur");
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.add(new Blur());
+        f.pack();
+        f.setVisible(true);
+    }
+}

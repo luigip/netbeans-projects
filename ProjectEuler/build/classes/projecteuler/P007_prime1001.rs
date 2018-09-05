@@ -1,0 +1,2 @@
+projecteuler.P010_primeUnder2m
+projecteuler.P007_prime1001
